@@ -90,6 +90,7 @@
     <ClInclude Include="..\..\..\Common\src\quad.hpp" />
     <ClInclude Include="..\..\..\Common\src\shader.hpp" />
     <ClInclude Include="..\..\..\Common\src\texture.hpp" />
+    <ClInclude Include="LineStrip.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

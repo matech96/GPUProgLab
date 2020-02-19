@@ -8,12 +8,13 @@
 
 #include "shader.hpp"
 #include "texture.hpp"
-#include "quad.hpp"
+//#include "quad.hpp"
+#include "LineStrip.h"
 
 const unsigned int windowWidth = 600;
 const unsigned int windowHeight = 600;
 
-Quad quad;
+LineStrip quad;
 Shader shader;
 Texture2D image;
 
@@ -40,8 +41,18 @@ void onDisplay()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	float vertices[] = {
+	-0.5f, -0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	 0.0f,  0.5f, 0.0f
+	};
+
+
+
+	//std::cout << glGetString(GL_VERSION) << std::endl;
 	shader.enable();
 	shader.setUniformTexture("data", image.getTextureHandle(), 0);
+	shader.setUniform4f("ourColor", 1, 0, 0, 1);
 	quad.render();
 	shader.disable();
 

@@ -24,7 +24,7 @@
 #include <GL/glew.h>
 
 class Quad{
-private:
+protected:
   GLuint vertexArray;
 
   static GLfloat vertices[18];

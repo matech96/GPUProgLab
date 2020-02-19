@@ -71,5 +71,8 @@
     <ClInclude Include="..\..\..\Common\src\shader.hpp">
       <Filter>Common\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LineStrip.h">
+      <Filter>Common\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

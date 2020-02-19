@@ -1,6 +1,7 @@
 #version 330
 
 uniform sampler2D data;
+uniform vec4 ourColor;
 
 in vec2 fTexCoord;
 out vec4 outColor;
@@ -66,6 +67,7 @@ void main(){
 					+ texture(data, fTexCoord + vec2(0,d))
 					+ texture(data, fTexCoord - vec2(0,d)))
 						+ (4*texture(data, fTexCoord));
+	outColor = ourColor;
 	//outColor = vec4(L_dx+L_dy, L_dx+L_dy, L_dx+L_dy, 0);
 //	float tmp = sqrt((L_dx*L_dx)+(L_dy*L_dy)); // 0.5;
 //	outColor = vec4(tmp,tmp,tmp, 0);

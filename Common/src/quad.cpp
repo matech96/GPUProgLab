@@ -76,9 +76,7 @@ void Quad::render(int width, int height)
 	int vp[4];
 	glGetIntegerv(GL_VIEWPORT, vp);
 	glViewport(0, 0, width, height);
-	glBindVertexArray(vertexArray);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
+	render();
 	glViewport(vp[0], vp[1], vp[2], vp[3]);
 }
 
