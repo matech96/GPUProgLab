@@ -59,7 +59,7 @@ float getGray(vec2 coord){
 
 //elkiemeles
 void main(){
-	float d = 0.005;
+	float d = 2.0 / 600.0; //0.005;
 	outColor = texture(data, fTexCoord)
 				- (texture(data, fTexCoord + vec2(d,0))
 					+ texture(data, fTexCoord - vec2(d,0))
