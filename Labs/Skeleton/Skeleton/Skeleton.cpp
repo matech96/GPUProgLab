@@ -30,6 +30,7 @@ void onInitialization()
 	glClearColor(0.4f, 0.6f, 0.8f, 1.0f);
 	quad.init();
 	shader.loadShader(GL_VERTEX_SHADER, "..\\shaders\\passthrough.vert");
+	shader.loadShader(GL_GEOMETRY_SHADER, "..\\shaders\\cat_rom_spline.geom");
 	shader.loadShader(GL_FRAGMENT_SHADER, "..\\shaders\\simple.frag");
 	shader.compile();
 

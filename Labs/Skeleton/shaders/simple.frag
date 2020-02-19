@@ -3,7 +3,7 @@
 uniform sampler2D data;
 uniform vec4 ourColor;
 
-in vec2 fTexCoord;
+//in vec2 fTexCoord;
 out vec4 outColor;
 
 // Fraktal
@@ -60,13 +60,13 @@ float getGray(vec2 coord){
 
 //elkiemeles
 void main(){
-	float d = 2.0 / 600.0; //0.005;
-	outColor = texture(data, fTexCoord)
-				- (texture(data, fTexCoord + vec2(d,0))
-					+ texture(data, fTexCoord - vec2(d,0))
-					+ texture(data, fTexCoord + vec2(0,d))
-					+ texture(data, fTexCoord - vec2(0,d)))
-						+ (4*texture(data, fTexCoord));
+//	float d = 2.0 / 600.0; //0.005;
+//	outColor = texture(data, fTexCoord)
+//				- (texture(data, fTexCoord + vec2(d,0))
+//					+ texture(data, fTexCoord - vec2(d,0))
+//					+ texture(data, fTexCoord + vec2(0,d))
+//					+ texture(data, fTexCoord - vec2(0,d)))
+//						+ (4*texture(data, fTexCoord));
 	outColor = ourColor;
 	//outColor = vec4(L_dx+L_dy, L_dx+L_dy, L_dx+L_dy, 0);
 //	float tmp = sqrt((L_dx*L_dx)+(L_dy*L_dy)); // 0.5;
