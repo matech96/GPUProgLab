@@ -74,5 +74,8 @@
     <ClInclude Include="LineStrip.h">
       <Filter>Common\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

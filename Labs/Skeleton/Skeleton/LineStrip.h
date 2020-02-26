@@ -3,12 +3,15 @@
 #include <GL/glew.h>
 #include "quad.hpp"
 
+const int vertices_size = 24*30;
+
 class LineStrip
 {
 protected:
 	GLuint vertexArray;
 
-	static GLfloat vertices[24];
+	static int vertecies_pos;
+	static GLfloat vertices[vertices_size];
 	GLuint vertexBuffer;
 
 	static GLfloat texCoords[12];
@@ -19,6 +22,7 @@ public:
 	~LineStrip();
 
 	void init();
+	void addPoint(float x, float y);
 	void render();
 	void render(int widtgh, int height);
 };
@@ -33,14 +37,8 @@ public:
 //0.5f, -0.5f, 0.0f,
 //0.5f, 0.5f, 0.0f,
 //-0.5f, 0.5f, 0.0f
-GLfloat LineStrip::vertices[24] = { -0.5f, -0.5f, 0.0f,
-				 0.5f, -0.5f, 0.0f,
-				 0.5f, 0.5f, 0.0f,
-				 -0.5f, 0.5f, 0.0f,
-				 0.5f, -0.5f, 0.0f,
-				 0.5f, 0.5f, 0.0f,
-				 -0.5f, 0.5f, 0.0f,
-				-0.5f, -0.5f, 0.0f, };
+int LineStrip::vertecies_pos = 0;
+GLfloat LineStrip::vertices[vertices_size] = { };
 
 GLfloat LineStrip::texCoords[12] = { 0.0f, 1.0f,
 				   1.0f, 1.0f,
@@ -62,14 +60,6 @@ LineStrip::~LineStrip()
 
 void LineStrip::init()
 {
-	glGenVertexArrays(1, &vertexArray);
-	glBindVertexArray(vertexArray);
-
-	glGenBuffers(1, &vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 24, vertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glGenBuffers(1, &texCoordBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, texCoordBuffer);
@@ -80,9 +70,35 @@ void LineStrip::init()
 	glBindVertexArray(0);
 }
 
+inline void LineStrip::addPoint(float x, float y)
+{
+	if (vertecies_pos >= 4*3){
+		int vp = vertecies_pos;
+		for (int i = 3*3; i > 0; i--)
+		{
+			vertices[vertecies_pos++] = vertices[vp - i];
+		}
+	}
+	vertices[vertecies_pos++] = x;
+	vertices[vertecies_pos++] = y;
+	vertices[vertecies_pos++] = 0.0f;
+}
+
+
 void LineStrip::render() {
+
+	glGenVertexArrays(1, &vertexArray);
 	glBindVertexArray(vertexArray);
-	glDrawArrays(GL_LINES_ADJACENCY, 0, 8);
+
+	glGenBuffers(1, &vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertices_size, vertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer((GLuint)0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+
+	glBindVertexArray(vertexArray);
+	glDrawArrays(GL_LINES_ADJACENCY, 0, vertecies_pos / 3);
 	glBindVertexArray(0);
 }
 

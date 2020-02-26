@@ -10,6 +10,7 @@
 #include "texture.hpp"
 //#include "quad.hpp"
 #include "LineStrip.h"
+#include "Skeleton.h"
 
 const unsigned int windowWidth = 600;
 const unsigned int windowHeight = 600;
@@ -29,6 +30,7 @@ void onInitialization()
 
 	glClearColor(0.4f, 0.6f, 0.8f, 1.0f);
 	quad.init();
+
 	shader.loadShader(GL_VERTEX_SHADER, "..\\shaders\\passthrough.vert");
 	shader.loadShader(GL_GEOMETRY_SHADER, "..\\shaders\\cat_rom_spline.geom");
 	shader.loadShader(GL_FRAGMENT_SHADER, "..\\shaders\\simple.frag");
@@ -69,6 +71,16 @@ void onKeyboard(unsigned char key, int pX, int pY) {
 	}
 }
 
+void onMouseClicks(int button, int state, int x, int y) {
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		float windowWidthf = float(windowWidth);
+		float windowHeightf = float(windowHeight);
+		float x_ = (float(x) - (windowWidthf / 2.0f)) / (windowWidthf / 2.0f);
+		float y_ = ((windowHeightf / 2.0f) - float(y)) / (windowHeightf / 2.0f);
+		quad.addPoint(x_, y_);
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
@@ -93,6 +105,7 @@ int main(int argc, char* argv[])
 	onInitialization();
 	glutDisplayFunc(onDisplay);
 	glutKeyboardFunc(onKeyboard);
+	glutMouseFunc(onMouseClicks);
 	glutMainLoop();
 
     return 0;
