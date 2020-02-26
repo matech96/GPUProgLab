@@ -73,6 +73,7 @@ void LineStrip::init()
 inline void LineStrip::addPoint(float x, float y)
 {
 	if (vertecies_pos >= 4*3){
+		vertecies_pos -= 4*3;
 		int vp = vertecies_pos;
 		for (int i = 3*3; i > 0; i--)
 		{
@@ -82,6 +83,16 @@ inline void LineStrip::addPoint(float x, float y)
 	vertices[vertecies_pos++] = x;
 	vertices[vertecies_pos++] = y;
 	vertices[vertecies_pos++] = 0.0f;
+	if (vertecies_pos >= 4 * 3) {
+		int vp = vertecies_pos;
+		for (int i = 3 * 3; i > 0; i--)
+		{
+			vertices[vertecies_pos++] = vertices[vp - i];
+		}
+		vertices[vertecies_pos++] = x;
+		vertices[vertecies_pos++] = y;
+		vertices[vertecies_pos++] = 0.0f;
+	}
 }
 
 
