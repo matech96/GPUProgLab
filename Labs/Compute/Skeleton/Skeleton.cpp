@@ -20,6 +20,8 @@ const unsigned int workGroupSize = 256;
 // Number of particles
 const unsigned int particlesNum = 1024;
 
+float clickCoords[2] = {0.5f, 0.5f};
+
 // Vec4 like structure
 struct xyzw
 {
@@ -35,6 +37,7 @@ Shader particleRenderShader;
 GLuint positionBuffer;
 // Velocity buffer
 GLuint velocityBuffer;
+GLuint clickBuffer;
 
 // Vertex array object
 GLuint vao;
@@ -82,10 +85,9 @@ void onInitialization()
 	xyzw* vel = (xyzw*)glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, particlesNum * sizeof(xyzw), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 	for (unsigned int i = 0; i < particlesNum; ++i)
 	{
-		float c = 2.0f;
-		vel[i].x = c * 1.0f * ((float)rand() / (float)RAND_MAX) - 1.0f;
-		vel[i].y = c * 1.0f * ((float)rand() / (float)RAND_MAX) - 1.0f;
-		vel[i].z = c * 1.0f * ((float)rand() / (float)RAND_MAX) - 1.0f;
+		vel[i].x = 0.001f * (2.0f * ((float)rand() / (float)RAND_MAX) - 1.0f);
+		vel[i].y = 0.001f * (2.0f * ((float)rand() / (float)RAND_MAX) - 1.0f);
+		vel[i].z = 0.001f * (2.0f * ((float)rand() / (float)RAND_MAX) - 1.0f);
 		vel[i].w = 1.0f;
 	}
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
@@ -118,13 +120,15 @@ void onDisplay()
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, velocityBuffer);
 	
 	particleMoveShader.enable();
-	glDispatchCompute(particlesNum / workGroupSize, 1, 1); // 1024/256 = 4 munkacsoport
+	particleMoveShader.setUniform2f("click", clickCoords[0], clickCoords[1]);
+	glDispatchCompute(particlesNum / workGroupSize, 1, 1);
 	
 	// Synchronize between the compute and render shaders
 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
 
 	// Render the particles
 	particleRenderShader.enable();
+	particleMoveShader.setUniform2f("click", clickCoords[0], clickCoords[1]);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_POINTS, 0, particlesNum);
 	glBindVertexArray(0);
@@ -139,6 +143,15 @@ void onKeyboard(unsigned char key, int pX, int pY) {
 	case 27:
 		glutExit();
 		break;
+	}
+}
+
+void onMouseClicks(int button, int state, int x, int y) {
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		float windowWidthf = float(windowWidth);
+		float windowHeightf = float(windowHeight);
+		clickCoords[0] = (float(x) - (windowWidthf / 2.0f)) / (windowWidthf / 2.0f);
+		clickCoords[1] = ((windowHeightf / 2.0f) - float(y)) / (windowHeightf / 2.0f);
 	}
 }
 
@@ -171,6 +184,7 @@ int main(int argc, char* argv[])
 	onInitialization();
 	glutDisplayFunc(onDisplay);
 	glutKeyboardFunc(onKeyboard);
+	glutMouseFunc(onMouseClicks);
 	glutIdleFunc(onIdle);
 	glutMainLoop();
 

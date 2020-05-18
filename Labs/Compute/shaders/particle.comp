@@ -15,6 +15,11 @@ layout(std430, binding = 1) buffer velocityBuffer
 layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
 
 const float dt = 0.01;
+const float g = 0.1;
+const float mi = 0.0001;
+const float mClick = 0.000001;
+uniform vec2 click;
+const float eps = 0.0001;
 
 void main()
 {
@@ -22,6 +27,20 @@ void main()
 
 	vec3 pos = position[gid].xyz;
 	vec3 vel = velocity[gid].xyz;
+	vec3 resForce = vec3(0.0);
+	vec3 clickPos =  vec3(click,0.0);
+	vec3 rij = clickPos - pos;
+
+	for(int i = 0;i<position.length();i++){
+		if(i != gid){			
+			resForce += (mi * rij) / pow(sqrt(length(rij) + eps*eps),3);;
+		}
+	}
+
+
+	vec3 a = resForce * g;
+
+	vel += a * dt;
 
 	vec3 npos = pos + vel * dt;
 
