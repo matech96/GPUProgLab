@@ -1,0 +1,16 @@
+
+*.zip
+Labs/Compute/.vs/*
+*.dll
+*.exe
+*.ilk
+*.pdb
+*.sln
+*.obj
+*.log
+*.tlog
+*.idb
+*.vcxproj
+*.filters
+*.user
+Labs/Tesselator/.vs/*
