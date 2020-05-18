@@ -4,7 +4,48 @@
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
+layout(std430, binding = 0) buffer positionBufferTmp
+{
+	vec4 tmpPos[];
+};
+
+layout(std430, binding = 1) buffer positionBuffer
+{
+	vec4 pos[];
+};
+
+layout(std430, binding = 2) buffer velocityBuffer
+{
+	vec4 vel[];
+};
+
+uniform int N;
+uniform float d;
+uniform float sideDistWeight;
+uniform float diagDistWeight;
+
+vec3 side(vec3 p1, vec3 p2){
+	vec3 diff = p2-p1;
+	return (diff/length(diff)) * (length(diff)-d) * 0.5 * sideDistWeight;
+}
+
+vec3 diag(vec3 p1, vec3 p2){
+	vec3 diff = p2-p1;
+	return (diff/length(diff)) * (length(diff)-sqrt(2)*d) * 0.5 * diagDistWeight;
+}
+
 void main()
 {
-	//TODO implement distance constraint	
+	uint id = gl_GlobalInvocationID.x * N + gl_GlobalInvocationID.y;
+	vec3 p1 = tmpPos[id].xyz;
+	vec3 sum = {0.0};
+	if(gl_GlobalInvocationID.y != N-1) sum += side(p1,tmpPos[id+1].xyz);
+	if(gl_GlobalInvocationID.y != 0) sum += side(p1,tmpPos[id-1].xyz);
+	if(gl_GlobalInvocationID.x != N-1) sum += side(p1,tmpPos[id+N].xyz);
+	if(gl_GlobalInvocationID.x != 0) sum += side(p1,tmpPos[id-N].xyz);
+	if(gl_GlobalInvocationID.x != N-1 && gl_GlobalInvocationID.y != N-1) sum += diag(p1,tmpPos[id+N+1].xyz);
+	if(gl_GlobalInvocationID.x != N-1 && gl_GlobalInvocationID.y != 0) sum += diag(p1,tmpPos[id+N-1].xyz);
+	if(gl_GlobalInvocationID.x != 0 && gl_GlobalInvocationID.y != N-1) sum += diag(p1,tmpPos[id-N+1].xyz);
+	if(gl_GlobalInvocationID.x != 0 && gl_GlobalInvocationID.y != 0) sum += diag(p1,tmpPos[id-N-1].xyz);
+	tmpPos[id].xyz += sum;
 }

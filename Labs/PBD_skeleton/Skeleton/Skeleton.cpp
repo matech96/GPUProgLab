@@ -25,6 +25,10 @@ const unsigned int Nwg = 32;
 // Number of vertices (resX=resY)
 const unsigned int vNum = N*N;
 
+const float center[3] = {0.0, -0.5, 0.0};
+const float r = 0.5;
+const float d = 1.0 / (N-1);
+
 // Vec4 like structure
 struct xyzw
 {
@@ -139,16 +143,42 @@ void onDisplay()
 	glm::mat4 view = glm::lookAt(glm::vec3(0, 0.5, 2.5), glm::vec3(0, -0.5, 0.5), glm::vec3(0, 1, 0));
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)windowWidth/ (float)windowHeight, 0.1f, 10.0f);
 		
-	const float dt = 0.0001f;
+	const float dt = 0.01f;
 	//TODO call External force shader
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, positionBufferTmp);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, positionBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, velocityBuffer);
+	vertexGravityShader.enable();
+	vertexGravityShader.setUniform1f("dt", dt);
+	vertexGravityShader.setUniform1i("N", N);
+	glDispatchCompute(N / Nwg, N / Nwg, 1);
 	
+	float collWeight = 1.0, sideDistWeight = 0.1, diagDistWeight = 0.05, sideBendWeight = 0.001, diagBendWeight = 0.0005;
+
 	const int NITER = 50;
 	for (int i = 0; i < NITER; ++i)
 	{
-		//TODO call constraint shaders		
+		
+		vertexCollisionShader.enable();
+		vertexCollisionShader.setUniform1f("collWeight", collWeight);
+		vertexCollisionShader.setUniform1f("r", r);
+		vertexCollisionShader.setUniform3f("center", center[0], center[1], center[2]);
+		vertexCollisionShader.setUniform1i("N", N);
+		glDispatchCompute(N / Nwg, N / Nwg, 1);
+		
+		vertexDistanceShader.enable();
+		vertexDistanceShader.setUniform1f("sideDistWeight", sideDistWeight);
+		vertexDistanceShader.setUniform1f("diagDistWeight", diagDistWeight);
+		vertexDistanceShader.setUniform1f("d", d);
+		vertexDistanceShader.setUniform1i("N", N);
+		glDispatchCompute(N / Nwg, N / Nwg, 1);
+
 	}
 	
-	//TODO call final update Shader
+	vertexFinalUpdateShader.enable();
+	vertexFinalUpdateShader.setUniform1f("dt", dt);
+	vertexFinalUpdateShader.setUniform1i("N", N);
+	glDispatchCompute(N / Nwg, N / Nwg, 1);
 	
 	// Render the particles
 	renderShader.enable();

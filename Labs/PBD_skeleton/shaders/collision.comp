@@ -4,7 +4,31 @@
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
+layout(std430, binding = 0) buffer positionBufferTmp
+{
+	vec4 tmpPos[];
+};
+
+layout(std430, binding = 1) buffer positionBuffer
+{
+	vec4 pos[];
+};
+
+layout(std430, binding = 2) buffer velocityBuffer
+{
+	vec4 vel[];
+};
+
+uniform int N;
+uniform vec3 center;
+uniform float r;
+uniform float collWeight;
+
 void main()
 {
-	//TODO implement collision constraint
+	uint id = gl_GlobalInvocationID.x * N + gl_GlobalInvocationID.y;
+	vec3 diff = tmpPos[id].xyz - center;
+	if(length(diff) < r){
+		tmpPos[id].xyz = center + (diff / length(diff)) * collWeight * r;
+	}
 }

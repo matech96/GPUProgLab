@@ -4,7 +4,27 @@
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
+layout(std430, binding = 0) buffer positionBufferTmp
+{
+	vec4 tmpPos[];
+};
+
+layout(std430, binding = 1) buffer positionBuffer
+{
+	vec4 pos[];
+};
+
+layout(std430, binding = 2) buffer velocityBuffer
+{
+	vec4 vel[];
+};
+
+uniform float dt;
+uniform int N;
+
 void main()
 {
-	//TODO implement final update
+	uint id = gl_GlobalInvocationID.x * N + gl_GlobalInvocationID.y;
+	vel[id].xyz = (tmpPos[id].xyz - pos[id].xyz) / dt;
+	pos[id].xyz = tmpPos[id].xyz;
 }

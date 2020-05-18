@@ -4,7 +4,28 @@
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
+layout(std430, binding = 0) buffer positionBufferTmp
+{
+	vec4 tmpPos[];
+};
+
+layout(std430, binding = 1) buffer positionBuffer
+{
+	vec4 pos[];
+};
+
+layout(std430, binding = 2) buffer velocityBuffer
+{
+	vec4 vel[];
+};
+
+uniform float dt;
+uniform int N;
+
 void main()
 {
-	//TODO implement external forces
+	uint gid = gl_GlobalInvocationID.x * N + gl_GlobalInvocationID.y;
+	vec3 f_i = {0,-0.98,0};
+	vel[gid].xyz += f_i*dt;
+	tmpPos[gid].xyz = pos[gid].xyz + vel[gid].xyz * dt;
 }

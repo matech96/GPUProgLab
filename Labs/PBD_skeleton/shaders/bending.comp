@@ -4,7 +4,45 @@
 
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
+layout(std430, binding = 0) buffer positionBufferTmp
+{
+	vec4 tmpPos[];
+};
+
+layout(std430, binding = 1) buffer positionBuffer
+{
+	vec4 pos[];
+};
+
+layout(std430, binding = 2) buffer velocityBuffer
+{
+	vec4 vel[];
+};
+
+uniform int N;
+uniform float sideBendWeight;
+uniform float diagBendWeight;
+
+vec3 projOnLine(vec3 pOrig, vec3 p1, vec3 p2, bool side){
+	float weight = side ? sideBendWeight : diagBendWeight;
+	vec3 diff = p2 - p1;
+	vec3 diffNorm = diff / length(diff);
+	vec3 a = pOrig-p1;
+	vec3 a1 = (a * diffNorm) * diffNorm;
+	vec3 a2 = a - a1;
+	return -weight * a2;
+}
+
 void main()
 {
-	//TODO implement bending constraint	
+	uint id = gl_GlobalInvocationID.x * N + gl_GlobalInvocationID.y;
+	vec3 pOrig = tmpPos[id].xyz;
+	vec3 tmpOrig = pOrig;
+	if(gl_GlobalInvocationID.y != N-1 && gl_GlobalInvocationID.y != 0) tmpOrig += projOnLine(pOrig,tmpPos[id-1].xyz,tmpPos[id+1].xyz, true);
+	if(gl_GlobalInvocationID.x != N-1 && gl_GlobalInvocationID.x != 0) tmpOrig += projOnLine(pOrig,tmpPos[id-N].xyz,tmpPos[id+N].xyz, true);
+	if(gl_GlobalInvocationID.x != 0 && gl_GlobalInvocationID.x != N-1 && gl_GlobalInvocationID.y != N-1 && gl_GlobalInvocationID.y != 0){
+		tmpOrig += projOnLine(pOrig,tmpPos[id-N-1].xyz,tmpPos[id+N+1].xyz, false);
+		tmpOrig += projOnLine(pOrig,tmpPos[id-N+1].xyz,tmpPos[id+N-1].xyz, false);
+	}
+	tmpPos[id].xyz = tmpOrig;
 }
