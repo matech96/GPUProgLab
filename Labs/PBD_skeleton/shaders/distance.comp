@@ -25,13 +25,13 @@ uniform float sideDistWeight;
 uniform float diagDistWeight;
 
 vec3 side(vec3 p1, vec3 p2){
-	vec3 diff = p2-p1;
-	return (diff/length(diff)) * (length(diff)-d) * 0.5 * sideDistWeight;
+	vec3 dist = p2-p1;
+	return (dist/length(dist)) * (length(dist)-d) * 0.5 * sideDistWeight;
 }
 
 vec3 diag(vec3 p1, vec3 p2){
-	vec3 diff = p2-p1;
-	return (diff/length(diff)) * (length(diff)-sqrt(2)*d) * 0.5 * diagDistWeight;
+	vec3 dist = p2-p1;
+	return (dist/length(dist)) * (length(dist)-sqrt(2)*d) * 0.5 * diagDistWeight;
 }
 
 void main()

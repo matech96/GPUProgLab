@@ -27,8 +27,8 @@ uniform float collWeight;
 void main()
 {
 	uint id = gl_GlobalInvocationID.x * N + gl_GlobalInvocationID.y;
-	vec3 diff = tmpPos[id].xyz - center;
-	if(length(diff) < r){
-		tmpPos[id].xyz = center + (diff / length(diff)) * collWeight * r;
+	vec3 dist = tmpPos[id].xyz - center;
+	if(length(dist) < r){
+		tmpPos[id].xyz = center + (dist / length(dist)) * collWeight * r;
 	}
 }
